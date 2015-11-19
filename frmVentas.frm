@@ -302,7 +302,7 @@ Private NoEncontrados As String
 
 
 
-Dim SQL As String
+Dim Sql As String
 Dim VariasEntradas As String
 
 
@@ -326,13 +326,13 @@ Dim I As Integer
     If Index = 1 Then
         Unload Me
     Else
-        SQL = ""
+        Sql = ""
         For I = 0 To Text8.Count - 1
-            If Text8(I).Text = "" Then SQL = SQL & "Campo: " & I & vbCrLf
+            If Text8(I).Text = "" Then Sql = Sql & "Campo: " & I & vbCrLf
         Next I
-        If SQL <> "" Then
-            SQL = "No pueden haber campos vacios: " & vbCrLf & vbCrLf & SQL
-            MsgBox SQL, vbExclamation
+        If Sql <> "" Then
+            Sql = "No pueden haber campos vacios: " & vbCrLf & vbCrLf & Sql
+            MsgBox Sql, vbExclamation
             Text8(0).SetFocus
             Exit Sub
         End If
@@ -385,10 +385,19 @@ Dim Mens As String
             
             'Vamos linea a linea
             Mens = "Error insertando en Excel"
-            If Not RecorremosLineas(Mens) Then
-                MsgBox Mens, vbExclamation
-            End If
+            ' en el caso de que sea catadau la salida es diferente
+            If Cooperativa = 0 Then
+                If Not RecorremosLineasCatadau(Mens) Then
+                    MsgBox Mens, vbExclamation
+                End If
             
+            Else
+                
+                If Not RecorremosLineas(Mens) Then
+                    MsgBox Mens, vbExclamation
+                End If
+                
+            End If
             Screen.MousePointer = vbDefault
             
         End If
@@ -449,16 +458,16 @@ Dim KilosI As Long
         Dim RS As ADODB.Recordset
         Dim C As Long
         Dim cad As String
-        SQL = "Select * from tmpexcel WHERE situacion <> 0 and codusu = " & Usuario
+        Sql = "Select * from tmpexcel WHERE situacion <> 0 and codusu = " & Usuario
 
 
         Set RS = New ADODB.Recordset
-        RS.Open SQL, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
-        SQL = ""
+        RS.Open Sql, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+        Sql = ""
         C = 0
         While Not RS.EOF
-            SQL = SQL & (RS!numalbar) & "        "
-            If (C Mod 6) = 5 Then SQL = SQL & vbCrLf
+            Sql = Sql & (RS!numalbar) & "        "
+            If (C Mod 6) = 5 Then Sql = Sql & vbCrLf
             C = C + 1
             RS.MoveNext
         Wend
@@ -476,20 +485,20 @@ Dim KilosI As Long
         End If
 
         'Abrimos los registros =0 k son los OK'
-        SQL = "¿ Desea importar las clasificaciones correctas ?"
-        If MsgBox(SQL, vbQuestion + vbYesNoCancel) <> vbYes Then Exit Sub
+        Sql = "¿ Desea importar las clasificaciones correctas ?"
+        If MsgBox(Sql, vbQuestion + vbYesNoCancel) <> vbYes Then Exit Sub
 
 
-        SQL = "Select * from tmpexcel WHERE situacion = 0 and codusu = " & Usuario
+        Sql = "Select * from tmpexcel WHERE situacion = 0 and codusu = " & Usuario
         
-        RS.Open SQL, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+        RS.Open Sql, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
         
         C = 0
         While Not RS.EOF
             C = C + 1
             
-            SQL = "delete from rhisfruta_clasif where numalbar = " & RS!numalbar
-            Conn.Execute SQL
+            Sql = "delete from rhisfruta_clasif where numalbar = " & RS!numalbar
+            Conn.Execute Sql
             
             
             For I = 1 To mConfig.MaxCalidades
@@ -537,12 +546,12 @@ Dim KilosI As Long
                 End Select
                 
                 If KilosI <> 0 Then
-                    SQL = "insert into rhisfruta_clasif (numalbar, codvarie, codcalid, kilosnet) "
-                    SQL = SQL & " values (" & RS!numalbar & "," & RS!codvarie & ","
-                    SQL = SQL & I & ","
-                    SQL = SQL & KilosI & ")"
+                    Sql = "insert into rhisfruta_clasif (numalbar, codvarie, codcalid, kilosnet) "
+                    Sql = Sql & " values (" & RS!numalbar & "," & RS!codvarie & ","
+                    Sql = Sql & I & ","
+                    Sql = Sql & KilosI & ")"
                 
-                    Conn.Execute SQL
+                    Conn.Execute Sql
                 End If
                     
             Next I
@@ -687,7 +696,7 @@ Dim ValorFruta As Currency
     RecorremosLineas = False
 
 
-    SQL = "select * from tmpinfventas where codusu = " & Usuario & " order by fecalbar, numalbar "
+    Sql = "select * from tmpinfventas where codusu = " & Usuario & " order by fecalbar, numalbar "
     Sql1 = "select count(*) from tmpinfventas where codusu = " & Usuario
 
     Set RT = New ADODB.Recordset
@@ -702,7 +711,7 @@ Dim ValorFruta As Currency
     
     Set RT = Nothing
     Set RT = New ADODB.Recordset
-    RT.Open SQL, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+    RT.Open Sql, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
     
     
     I = 1
@@ -725,9 +734,9 @@ Dim ValorFruta As Currency
                 'variedad
                 ExcelSheet.Cells(I, 1).Value = DBLet(RsLAlb!codvarie, "N") ' codvarie
                 
-                SQL = "select nomvarie from variedades where codvarie = " & DBSet(RsLAlb!codvarie, "N")
+                Sql = "select nomvarie from variedades where codvarie = " & DBSet(RsLAlb!codvarie, "N")
                 Set RS = New ADODB.Recordset
-                RS.Open SQL, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+                RS.Open Sql, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
                 If Not RS.EOF Then
                     ExcelSheet.Cells(I, 2).Value = RS.Fields(0).Value ' nombre de variedad
                 Else
@@ -738,9 +747,9 @@ Dim ValorFruta As Currency
                 ' variedad comercial
                 ExcelSheet.Cells(I, 3).Value = DBLet(RsLAlb!codvarco, "N") ' codvarie comercial
                 
-                SQL = "select nomvarie from variedades where codvarie = " & DBSet(RsLAlb!codvarco, "N")
+                Sql = "select nomvarie from variedades where codvarie = " & DBSet(RsLAlb!codvarco, "N")
                 Set RS = New ADODB.Recordset
-                RS.Open SQL, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+                RS.Open Sql, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
                 If Not RS.EOF Then
                     ExcelSheet.Cells(I, 4).Value = RS.Fields(0).Value ' nombre de variedad
                 Else
@@ -758,9 +767,9 @@ Dim ValorFruta As Currency
                 ' cliente
                 ExcelSheet.Cells(I, 8).Value = DBLet(RsCAlb!codclien, "N")
                 
-                SQL = "select nomclien from clientes where codclien = " & DBSet(RsCAlb!codclien, "N")
+                Sql = "select nomclien from clientes where codclien = " & DBSet(RsCAlb!codclien, "N")
                 Set RS = New ADODB.Recordset
-                RS.Open SQL, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+                RS.Open Sql, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
                 If Not RS.EOF Then
                     ExcelSheet.Cells(I, 9).Value = RS.Fields(0).Value
                 Else
@@ -769,11 +778,11 @@ Dim ValorFruta As Currency
                 Set RS = Nothing
                 
                 ' destino
-                ExcelSheet.Cells(I, 10).Value = DBLet(RsCAlb!coddesti, "N")
+                ExcelSheet.Cells(I, 10).Value = DBLet(RsCAlb!codDESTI, "N")
                 
-                SQL = "select nomdesti from destinos where codclien = " & DBSet(RsCAlb!codclien, "N") & " and coddesti = " & DBSet(RsCAlb!coddesti, "N")
+                Sql = "select nomdesti from destinos where codclien = " & DBSet(RsCAlb!codclien, "N") & " and coddesti = " & DBSet(RsCAlb!codDESTI, "N")
                 Set RS = New ADODB.Recordset
-                RS.Open SQL, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+                RS.Open Sql, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
                 If Not RS.EOF Then
                     ExcelSheet.Cells(I, 11).Value = RS.Fields(0).Value
                 Else
@@ -784,9 +793,9 @@ Dim ValorFruta As Currency
                 ' forfait
                 ExcelSheet.Cells(I, 12).Value = DBLet(RsLAlb!codforfait, "T")
                 
-                SQL = "select nomconfe from forfaits where codforfait = " & DBSet(RsLAlb!codforfait, "T")
+                Sql = "select nomconfe from forfaits where codforfait = " & DBSet(RsLAlb!codforfait, "T")
                 Set RS = New ADODB.Recordset
-                RS.Open SQL, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+                RS.Open Sql, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
                 If Not RS.EOF Then
                     ExcelSheet.Cells(I, 13).Value = RS.Fields(0).Value
                 Else
@@ -797,9 +806,9 @@ Dim ValorFruta As Currency
                 ' marca
                 ExcelSheet.Cells(I, 14).Value = DBLet(RsLAlb!codmarca, "N")
                 
-                SQL = "select nommarca from marcas where codmarca = " & DBSet(RsLAlb!codmarca, "N")
+                Sql = "select nommarca from marcas where codmarca = " & DBSet(RsLAlb!codmarca, "N")
                 Set RS = New ADODB.Recordset
-                RS.Open SQL, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+                RS.Open Sql, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
                 If Not RS.EOF Then
                     ExcelSheet.Cells(I, 15).Value = RS.Fields(0).Value
                 Else
@@ -878,9 +887,9 @@ Dim ValorFruta As Currency
                 End If
     
                 ' tipo de mercado
-                SQL = "select nomtimer, tiptimer from tipomer where codtimer = " & DBSet(RsCAlb!codtimer, "N")
+                Sql = "select nomtimer, tiptimer from tipomer where codtimer = " & DBSet(RsCAlb!codtimer, "N")
                 Set RS = New ADODB.Recordset
-                RS.Open SQL, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+                RS.Open Sql, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
                 If Not RS.EOF Then
                     Select Case DBLet(RS.Fields(1).Value, "N")
                         Case 0
@@ -969,8 +978,8 @@ Dim LineasEnBlanco As Integer
     '             Existe, No existe, IMPORTE negativo
     '
     
-    SQL = "DELETE FROM tmpExcel where codusu = " & Usuario
-    Conn.Execute SQL
+    Sql = "DELETE FROM tmpExcel where codusu = " & Usuario
+    Conn.Execute Sql
     FIN = False
     I = 2
     LineasEnBlanco = 0
@@ -1111,61 +1120,61 @@ Dim JJ As Integer
             ExisteEnTemporal = True
         End If
     
-        SQL = "insert into tmpexcel (codusu, numalbar, fecalbar, codsocio, codcampo, codvarie, tipoentr, kilosnet, "
-        SQL = SQL & "calidad1, calidad2, calidad3, calidad4, calidad5, calidad6, calidad7, calidad8, calidad9, "
-        SQL = SQL & "calidad10, calidad11, calidad12, calidad13, calidad14, calidad15, calidad16, calidad17, "
-        SQL = SQL & "calidad18, calidad19, calidad20, situacion) values ("
-        SQL = SQL & Usuario & ","
-        SQL = SQL & Albaran & ","
-        SQL = SQL & "'" & Format(CDate(FecAlbaran), "yyyy-mm-dd") & "',"
-        SQL = SQL & Socio & ","
-        SQL = SQL & Campo & ","
-        SQL = SQL & Variedad & ","
-        SQL = SQL & TipoEntr & ","
-        SQL = SQL & KilosNet & ","
+        Sql = "insert into tmpexcel (codusu, numalbar, fecalbar, codsocio, codcampo, codvarie, tipoentr, kilosnet, "
+        Sql = Sql & "calidad1, calidad2, calidad3, calidad4, calidad5, calidad6, calidad7, calidad8, calidad9, "
+        Sql = Sql & "calidad10, calidad11, calidad12, calidad13, calidad14, calidad15, calidad16, calidad17, "
+        Sql = Sql & "calidad18, calidad19, calidad20, situacion) values ("
+        Sql = Sql & Usuario & ","
+        Sql = Sql & Albaran & ","
+        Sql = Sql & "'" & Format(CDate(FecAlbaran), "yyyy-mm-dd") & "',"
+        Sql = Sql & Socio & ","
+        Sql = Sql & Campo & ","
+        Sql = Sql & Variedad & ","
+        Sql = Sql & TipoEntr & ","
+        Sql = Sql & KilosNet & ","
         
         For JJ = 1 To mConfig.MaxCalidades
-            SQL = SQL & Calidad(JJ) & ","
+            Sql = Sql & Calidad(JJ) & ","
         Next JJ
     
         If ExisteEnTemporal Then
-            SQL = SQL & "2)"
+            Sql = Sql & "2)"
         Else
-            SQL = SQL & "0)"
+            Sql = Sql & "0)"
         End If
         
     Else
-        SQL = "insert into tmpexcel (codusu, numalbar, fecalbar, codsocio, codcampo, codvarie, tipoentr, kilosnet, "
-        SQL = SQL & "calidad1, calidad2, calidad3, calidad4, calidad5, calidad6, calidad7, calidad8, calidad9, "
-        SQL = SQL & "calidad10, calidad11, calidad12, calidad13, calidad14, calidad15, calidad16, calidad17,"
-        SQL = SQL & "calidad18, calidad19, calidad20, situacion) values ("
-        SQL = SQL & Usuario & ","
-        SQL = SQL & Albaran & ",'"
-        SQL = SQL & Format(CDate(FecAlbaran), "yyyy-mm-dd") & "',"
-        SQL = SQL & Socio & ","
-        SQL = SQL & Campo & ","
-        SQL = SQL & Variedad & ","
-        SQL = SQL & TipoEntr & ","
-        SQL = SQL & KilosNet & ","
+        Sql = "insert into tmpexcel (codusu, numalbar, fecalbar, codsocio, codcampo, codvarie, tipoentr, kilosnet, "
+        Sql = Sql & "calidad1, calidad2, calidad3, calidad4, calidad5, calidad6, calidad7, calidad8, calidad9, "
+        Sql = Sql & "calidad10, calidad11, calidad12, calidad13, calidad14, calidad15, calidad16, calidad17,"
+        Sql = Sql & "calidad18, calidad19, calidad20, situacion) values ("
+        Sql = Sql & Usuario & ","
+        Sql = Sql & Albaran & ",'"
+        Sql = Sql & Format(CDate(FecAlbaran), "yyyy-mm-dd") & "',"
+        Sql = Sql & Socio & ","
+        Sql = Sql & Campo & ","
+        Sql = Sql & Variedad & ","
+        Sql = Sql & TipoEntr & ","
+        Sql = Sql & KilosNet & ","
         
         For JJ = 1 To mConfig.MaxCalidades
-            SQL = SQL & Calidad(JJ) & ","
+            Sql = Sql & Calidad(JJ) & ","
         Next JJ
     
         If Not Existe Then
-            SQL = SQL & "1)" ' no existe el albaran
+            Sql = Sql & "1)" ' no existe el albaran
         Else
             If Not ExisteCalidad Then ' no existe la calidad
-                SQL = SQL & "11)"
+                Sql = Sql & "11)"
             Else
-                SQL = SQL & "12)" ' no cuadran kilos
+                Sql = Sql & "12)" ' no cuadran kilos
             End If
         End If
         
     End If
     
     
-    If SQL <> "" Then Conn.Execute SQL
+    If Sql <> "" Then Conn.Execute Sql
         
     RT.Close
     
@@ -1237,3 +1246,202 @@ Private Sub Text8_LostFocus(Index As Integer)
             
     End With
 End Sub
+
+
+Private Function Cooperativa() As Byte
+Dim Sql As String
+Dim RS As ADODB.Recordset
+
+    On Error Resume Next
+
+    Cooperativa = 0
+    Sql = "select cooperativa from rparam "
+    
+    Set RS = New ADODB.Recordset
+    RS.Open Sql, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+            
+    If Not RS.EOF Then
+        Cooperativa = (DBLet(RS!Cooperativa, "N"))
+    End If
+    Set RS = Nothing
+
+End Function
+
+Private Function RecorremosLineasCatadau(Mens As String) As Boolean
+Dim I As Integer
+Dim j As Integer
+Dim JJ As Integer
+Dim F As Date
+Dim Cod As String
+Dim FE As String
+Dim RT As ADODB.Recordset
+Dim RS As ADODB.Recordset
+Dim RsCAlb As ADODB.Recordset
+Dim RsLAlb As ADODB.Recordset
+Dim Calidad As Integer
+Dim NFic As Integer
+Dim Lin As String
+Dim Sql1 As String
+Dim Sql2 As String
+
+Dim NFile As Integer
+Dim TotalGastos As Currency
+Dim GastosKg As Currency
+Dim ImpVtaKg As Currency
+Dim ValorFruta As Currency
+
+    On Error GoTo eRecorremosLineas
+
+    RecorremosLineasCatadau = False
+
+
+    Sql = "select * from tmpinformes where codusu = " & Usuario & " order by importeb1, fecha1 "
+    Sql1 = "select count(*) from tmpinformes where codusu = " & Usuario
+
+    Set RT = New ADODB.Recordset
+    RT.Open Sql1, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+    
+    If Not RT.EOF Then
+        Me.Pb1.visible = True
+        Me.Pb1.Max = RT.Fields(0).Value
+        Me.Pb1.Value = 0
+        Me.Refresh
+    End If
+    
+    Set RT = Nothing
+    Set RT = New ADODB.Recordset
+    RT.Open Sql, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+    
+    
+    I = 1
+    While Not RT.EOF
+        I = I + 1
+            
+        IncrementarProgresNew Pb1, 1
+    
+        Sql2 = "select * from albaran where numalbar = " & DBSet(RT!importeb1, "N")
+        Set RsCAlb = New ADODB.Recordset
+        RsCAlb.Open Sql2, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+    
+        If Not RsCAlb.EOF Then
+    
+            Sql2 = "select * from albaran_variedad where numalbar = " & DBSet(RT!importeb1, "N") & " and numlinea = " & DBSet(RT!importeb2, "N")
+            Set RsLAlb = New ADODB.Recordset
+            RsLAlb.Open Sql2, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+    
+            If Not RsLAlb.EOF Then
+                
+                ExcelSheet.Cells(I, 1).Value = DBLet(RsLAlb!numalbar, "N") 'nro de expediente
+                ExcelSheet.Cells(I, 2).Value = DBLet(RsCAlb!fechaalb, "F") 'fecha
+                ExcelSheet.Cells(I, 3).Value = DBLet(RsCAlb!matriveh, "T") 'matricula
+                
+                
+                Sql = "select nomclien from clientes where codclien = " & DBSet(RsCAlb!codclien, "N")
+                Set RS = New ADODB.Recordset
+                RS.Open Sql, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+                If Not RS.EOF Then
+                    ExcelSheet.Cells(I, 4).Value = RS.Fields(0).Value ' nombre de cliente
+                Else
+                    ExcelSheet.Cells(I, 4).Value = "" ' nombre de cliente
+                End If
+                Set RS = Nothing
+                
+                ' destino
+                Sql = "select nomdesti from destinos where codclien = " & DBSet(RsCAlb!codclien, "N")
+                Sql = Sql & " and coddesti = " & DBSet(RsCAlb!codDESTI, "N")
+                Set RS = New ADODB.Recordset
+                RS.Open Sql, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+                If Not RS.EOF Then
+                    ExcelSheet.Cells(I, 5).Value = RS.Fields(0).Value ' nombre de destino
+                Else
+                    ExcelSheet.Cells(I, 5).Value = "" ' nombre de destino
+                End If
+                Set RS = Nothing
+                
+                ' calibre
+                Sql = "select nomcalib from calibres where codvarie = " & DBSet(RsLAlb!codvarie, "N")
+                Sql = Sql & " and codcalib = " & DBSet(RT!importe2, "N")
+                Set RS = New ADODB.Recordset
+                RS.Open Sql, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+                If Not RS.EOF Then
+                    ExcelSheet.Cells(I, 6).Value = RS.Fields(0).Value ' nombre de calibre
+                Else
+                    ExcelSheet.Cells(I, 6).Value = "" ' nombre de calibre
+                End If
+                Set RS = Nothing
+                
+                ' envase
+                Sql = "select nomconfe from forfaits where codforfait = " & DBSet(RsLAlb!codforfait, "T")
+                Set RS = New ADODB.Recordset
+                RS.Open Sql, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+                If Not RS.EOF Then
+                    ExcelSheet.Cells(I, 7).Value = RS.Fields(0).Value ' nombre de forfait
+                Else
+                    ExcelSheet.Cells(I, 7).Value = "" ' nombre de forfait
+                End If
+                Set RS = Nothing
+                
+                'forfait
+                ExcelSheet.Cells(I, 8).Value = ExcelSheet.Cells(I, 7).Value
+                
+                'marca
+                Sql = "select nommarca from marcas where codmarca = " & DBSet(RsLAlb!codmarca, "N")
+                Set RS = New ADODB.Recordset
+                RS.Open Sql, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+                If Not RS.EOF Then
+                    ExcelSheet.Cells(I, 9).Value = RS.Fields(0).Value ' nombre de marca
+                Else
+                    ExcelSheet.Cells(I, 9).Value = "" ' nombre de marca
+                End If
+                Set RS = Nothing
+                
+                'categoria
+                ExcelSheet.Cells(I, 10).Value = DBLet(RsLAlb!categori, "N")  'categoria
+                
+                'tipo de palet
+                Sql = "select nompalet from confpale where codpalet = " & DBSet(RsLAlb!codpalet, "N")
+                Set RS = New ADODB.Recordset
+                RS.Open Sql, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+                If Not RS.EOF Then
+                    ExcelSheet.Cells(I, 11).Value = RS.Fields(0).Value ' tipo de palet
+                Else
+                    ExcelSheet.Cells(I, 11).Value = "" ' tipo de palet
+                End If
+                Set RS = Nothing
+                
+                ' el numero de palets como es por calibre lo dejo en blanco
+                ExcelSheet.Cells(I, 12).Value = ""
+                
+                ' numero de cajas
+                ExcelSheet.Cells(I, 13).Value = DBLet(RT!importe1, "N")
+                
+                ' kilosnetos
+                ExcelSheet.Cells(I, 14).Value = DBLet(RT!importe3, "N")
+                
+                ' precio
+                Dim Precio As Currency
+                Precio = 0
+                If DBLet(RT!importe3, "N") <> 0 Then
+                    Precio = Round2(DBLet(RT!importe4, "N") / DBLet(RT!importe3, "N"), 4)
+                End If
+                ExcelSheet.Cells(I, 15).Value = Precio
+                
+            End If
+        End If
+        
+        RT.MoveNext
+    Wend
+    
+    RT.Close
+    Set RT = Nothing
+    
+    RecorremosLineasCatadau = True
+    
+    Exit Function
+    
+eRecorremosLineas:
+    Mens = Mens & vbCrLf & "Recorriendo lineas: " & Err.Description
+End Function
+
+
+

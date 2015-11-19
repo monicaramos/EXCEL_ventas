@@ -24,6 +24,8 @@ Public Const FormatoImporte = "#,###,###,##0.00"
 Public Const FormatoPrecio = "##,##0.000"
 Public Const FormatoPorcen = "##0.00"
 
+
+
 Dim Rc As Byte
 
 
@@ -47,8 +49,9 @@ If mConfig.Leer = 1 Then
 End If
 
 'Si es importacion o creacion
-NombreHoja = Command '"/I ariagro1"
-'NombreHoja = "/E|ariagro8|22000|"
+
+'NombreHoja = Command '"/I ariagro1"
+NombreHoja = "/E|ariagro2|22000|"
 
 I = InStr(1, NombreHoja, "/")
 If I = 0 Then
