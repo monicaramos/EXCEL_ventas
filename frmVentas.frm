@@ -1423,9 +1423,11 @@ Dim ValorFruta As Currency
                 Precio = 0
                 If DBLet(RT!importe3, "N") <> 0 Then
                     Precio = Round2(DBLet(RT!importe4, "N") / DBLet(RT!importe3, "N"), 4)
+'                    If Precio <> 0 Then Stop
                 End If
-                ExcelSheet.Cells(I, 15).Value = Precio
-                
+'                ExcelSheet.Cells(I, 15).NumberFormat = "0.0000"
+                ExcelSheet.Cells(I, 15).Value = Format(Precio, "###,##0.0000")
+              
             End If
         End If
         

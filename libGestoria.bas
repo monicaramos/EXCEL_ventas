@@ -50,8 +50,8 @@ End If
 
 'Si es importacion o creacion
 
-'NombreHoja = Command '"/I ariagro1"
-NombreHoja = "/E|ariagro2|22000|"
+NombreHoja = Command '"/I ariagro1"
+'NombreHoja = "/E|ariagro2|22000|"
 
 I = InStr(1, NombreHoja, "/")
 If I = 0 Then
