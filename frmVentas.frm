@@ -1418,6 +1418,8 @@ Dim ValorFruta As Currency
                 ' kilosnetos
                 ExcelSheet.Cells(I, 14).Value = DBLet(RT!importe3, "N")
                 
+'                If RsLAlb!numalbar = 37 Then Stop
+                
                 ' precio
                 Dim Precio As Currency
                 Precio = 0
@@ -1426,7 +1428,7 @@ Dim ValorFruta As Currency
 '                    If Precio <> 0 Then Stop
                 End If
 '                ExcelSheet.Cells(I, 15).NumberFormat = "0.0000"
-                ExcelSheet.Cells(I, 15).Value = Format(Precio, "###,##0.0000")
+                ExcelSheet.Cells(I, 15).Value = Replace(Format(Precio, "#####0.0000"), ",", ".")
               
             End If
         End If
