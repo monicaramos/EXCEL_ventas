@@ -1429,6 +1429,19 @@ Dim ValorFruta As Currency
                 End If
 '                ExcelSheet.Cells(I, 15).NumberFormat = "0.0000"
                 ExcelSheet.Cells(I, 15).Value = Replace(Format(Precio, "#####0.0000"), ",", ".")
+                
+                '[Monica]28/06/2016: para catadau sacar la clase
+                Sql = "select variedades.codclase, clases.nomclase from variedades, clases where variedades.codvarie = " & DBSet(RsLAlb!codvarie, "N")
+                Sql = Sql & " and variedades.codclase = clases.codclase  "
+                Set RS = New ADODB.Recordset
+                RS.Open Sql, Conn, adOpenForwardOnly, adLockPessimistic, adCmdText
+                If Not RS.EOF Then
+                    ExcelSheet.Cells(I, 16).Value = RS.Fields(0).Value
+                    ExcelSheet.Cells(I, 17).Value = RS.Fields(1).Value
+                Else
+                    ExcelSheet.Cells(I, 16).Value = ""
+                    ExcelSheet.Cells(I, 17).Value = ""
+                End If
               
             End If
         End If
